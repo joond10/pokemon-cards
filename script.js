@@ -9,12 +9,19 @@ async function fetchPokemonType() {
     let dropdown = document.querySelector("#types");
     //For each type
     types.forEach((type) => {
-      //Create dropdown option
-      const option = document.createElement("option");
-      option.value = type.name;
-      option.text = upperCase(type.name);
-      //Add to dropdown menu
-      dropdown.appendChild(option);
+      if (
+        type.name !== "steel" &&
+        type.name !== "unknown" &&
+        type.name !== "shadow" &&
+        type.name !== "dark"
+      ) {
+        //Create dropdown option
+        const option = document.createElement("option");
+        option.value = type.name;
+        option.text = upperCase(type.name);
+        //Add to dropdown menu
+        dropdown.appendChild(option);
+      }
     });
 
     //If there is a change in the dropdown menu
@@ -44,9 +51,10 @@ async function fetchPokemonByType(selectedType) {
       const pokeResponse = await fetch(pokemon.url);
       //Parse the data
       const pokeDetails = await pokeResponse.json();
-      //Extract the type from the data
-      const primaryType = pokeDetails.types[0].type.name;
-      if (primaryType === selectedType) {
+      //An array of types for each pokemon that contains the type name
+      const types = pokeDetails.types.map((typeData) => typeData.type.name);
+      //If the array has the selected type, push it into matches
+      if (types.includes(selectedType)) {
         pokeMatches.push(pokeDetails);
       }
     }
@@ -100,22 +108,22 @@ async function fetchStarterPokemon() {
 
 /////////////////////////////////////////////////////////////////////////
 
-//Fetch ability description to display in card
-function fetchAbilityDescription(pokemon) {
+//Fetch about description to display in card
+function fetchAboutDescription(pokemon) {
   return new Promise(async (resolve, reject) => {
     try {
-      const response = await fetch(pokemon.abilities[0].ability.url);
+      const response = await fetch(pokemon.species.url);
       const data = await response.json();
-      const englishEntry = data.effect_entries.find(
+      const englishEntry = data.flavor_text_entries.find(
         (entry) => entry.language.name === "en"
       );
-      // If English entry is found, return its effect, otherwise return an empty string
+      // If English entry is found, replace \n and \f with a space
       const effect = englishEntry
-        ? englishEntry.short_effect
-        : data.effect_entries[0].short_effect;
+        ? englishEntry.flavor_text.replace(/[\n\f]/g, " ")
+        : "";
       resolve(effect);
     } catch (error) {
-      reject("Unable to fetch ability: " + error);
+      reject("Unable to fetch about: " + error);
     }
   });
 }
@@ -156,35 +164,27 @@ function createPokemonImage(pokemon) {
   return img;
 }
 
-function createAbilitySection() {
-  const abilityInfo = document.createElement("div");
-  abilityInfo.id = "abilityInfo";
-  return abilityInfo;
+function createAboutSection() {
+  const aboutInfo = document.createElement("div");
+  aboutInfo.id = "aboutInfo";
+  return aboutInfo;
 }
 
-function createAbilityName(pokemon) {
-  const abilities = document.createElement("h3");
-  abilities.className = "abilities";
-  abilities.innerText = upperCase(pokemon.abilities[0].ability.name + " - ");
-  return abilities;
-}
-
-function createAbilityDescription(pokemon) {
-  const abilityDescription = document.createElement("p");
-  abilityDescription.className = "abilityDescription";
-  fetchAbilityDescription(pokemon)
-    .then((ability) => {
-      abilityDescription.innerText = ability;
+function createAboutDescription(pokemon) {
+  const aboutDescription = document.createElement("p");
+  aboutDescription.className = "aboutDescription";
+  fetchAboutDescription(pokemon)
+    .then((about) => {
+      aboutDescription.innerText = about;
     })
     .catch((error) => {
       console.error(error);
     });
-  return abilityDescription;
+  return aboutDescription;
 }
 
-function appendToAbilities(abilityInfo, abilities, abilityDescription) {
-  abilityInfo.appendChild(abilities);
-  abilityInfo.appendChild(abilityDescription);
+function appendToAbout(aboutInfo, aboutDescription) {
+  aboutInfo.appendChild(aboutDescription);
 }
 
 function appendToTitle(title, name, hp) {
@@ -192,11 +192,11 @@ function appendToTitle(title, name, hp) {
   title.appendChild(hp);
 }
 
-function appendAllToCard(card, title, img, line, abilityInfo) {
+function appendAllToCard(card, title, img, line, aboutInfo) {
   card.appendChild(title);
   card.appendChild(img);
   card.appendChild(line);
-  card.appendChild(abilityInfo);
+  card.appendChild(aboutInfo);
 }
 
 //Sets the background color and hp color based on pokemon type
@@ -290,13 +290,12 @@ function displayCards(pokemonData) {
     const hp = createPokemonHP(pokemon);
     const img = createPokemonImage(pokemon);
     const line = document.createElement("hr");
-    const abilityInfo = createAbilitySection();
-    const abilities = createAbilityName(pokemon);
-    const abilityDescription = createAbilityDescription(pokemon);
+    const aboutInfo = createAboutSection();
+    const aboutDescription = createAboutDescription(pokemon);
 
     appendToTitle(title, name, hp);
-    appendToAbilities(abilityInfo, abilities, abilityDescription);
-    appendAllToCard(card, title, img, line, abilityInfo);
+    appendToAbout(aboutInfo, aboutDescription);
+    appendAllToCard(card, title, img, line, aboutInfo);
     setCardColors(pokemon, card, hp);
     container.appendChild(card);
   });

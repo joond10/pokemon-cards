@@ -1,3 +1,4 @@
+// Fetching pokemon types for drop down menu and fetching selected types
 async function fetchPokemonType() {
   try {
     const response = await fetch("https://pokeapi.co/api/v2/type");
@@ -56,6 +57,9 @@ async function fetchPokemonByType(selectedType) {
   }
 }
 
+/////////////////////////////////////////////////////////////////////////
+
+//Fetch all pokemon when view all is clicked
 async function fetchAllPokemon() {
   const noOfPokemon = 151;
   let ID = 1;
@@ -73,136 +77,30 @@ async function fetchAllPokemon() {
   }
 }
 
-function displayCards(pokemonData) {
-  const container = document.getElementById("container");
-  container.innerHTML = "";
+/////////////////////////////////////////////////////////////////////////
 
-  pokemonData.forEach((pokemon) => {
-    const card = document.createElement("div");
-    card.className = "card";
+//Fetch Bulbasaur, Charmander, and Squirtle only on window load
+async function fetchStarterPokemon() {
+  const starterPokemon = [1, 4, 7];
+  try {
+    const pokemonData = [];
 
-    const title = document.createElement("div");
-    title.className = "title";
-
-    const name = document.createElement("div");
-    name.className = "name";
-    name.innerHTML = `<h1>${upperCase(pokemon.name)}</h1>`;
-    title.appendChild(name);
-
-    const hp = document.createElement("div");
-    hp.className = "hp";
-    hp.innerHTML = `<h1>${pokemon.stats[0].base_stat} HP</h1>`;
-    title.appendChild(hp);
-
-    card.appendChild(title);
-
-    const img = document.createElement("img");
-    img.src = pokemon.sprites.other.showdown.front_default;
-    img.alt = pokemon.name;
-
-    const horizontalLine = document.createElement("hr");
-
-    const abilityInfo = document.createElement("div");
-    abilityInfo.id = "abilityInfo";
-
-    const abilities = document.createElement("h3");
-    abilities.className = "abilities";
-    abilities.innerText = upperCase(pokemon.abilities[0].ability.name + " - ");
-
-    const abilityDescription = document.createElement("p");
-    abilityDescription.className = "abilityDescription";
-    fetchAbilityDescription(pokemon)
-      .then((ability) => {
-        abilityDescription.innerText = ability;
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-
-    card.appendChild(img);
-    card.appendChild(horizontalLine);
-    abilityInfo.appendChild(abilities);
-    abilityInfo.appendChild(abilityDescription);
-    card.appendChild(abilityInfo);
-
-    if (pokemon.types[0].type.name === "water") {
-      card.style.backgroundColor = "#539AE2";
-      hp.style.color = "rgb(0, 124, 201)";
-    } else if (pokemon.types[0].type.name === "fire") {
-      card.style.backgroundColor = "#EA7A3C";
-      hp.style.color = "rgb(200, 64, 15)";
-    } else if (pokemon.types[0].type.name === "grass") {
-      card.style.backgroundColor = "#71C558";
-      hp.style.color = "#3e9424";
-    } else if (pokemon.types[0].type.name === "poison") {
-      card.style.backgroundColor = "#B468B7";
-      hp.style.color = "#824a84";
-    } else if (pokemon.types[0].type.name === "bug") {
-      card.style.backgroundColor = "#94BC4A";
-      hp.style.color = "#4f6722";
-    } else if (pokemon.types[0].type.name === "dark") {
-      card.style.backgroundColor = "#736C75";
-      hp.style.color = "#5a565b";
-    } else if (pokemon.types[0].type.name === "electric") {
-      card.style.backgroundColor = "#E5C531";
-      hp.style.color = "#ad9424";
-    } else if (pokemon.types[0].type.name === "fairy") {
-      card.style.backgroundColor = "#E397D1";
-      hp.style.color = "#af5e9c";
-    } else if (pokemon.types[0].type.name === "fighting") {
-      card.style.backgroundColor = "#CB5F48";
-      hp.style.color = "#8e3c2a";
-    } else if (pokemon.types[0].type.name === "flying") {
-      card.style.backgroundColor = "#7DA6DE";
-      hp.style.color = "#607ba0";
-    } else if (pokemon.types[0].type.name === "ghost") {
-      card.style.backgroundColor = "#846AB6";
-      hp.style.color = "#5d4884";
-    } else if (pokemon.types[0].type.name === "ground") {
-      card.style.backgroundColor = "#CC9F4F";
-      hp.style.color = "#987537";
-    } else if (pokemon.types[0].type.name === "ice") {
-      card.style.backgroundColor = "#70CBD4";
-      hp.style.color = "#55a7af";
-    } else if (pokemon.types[0].type.name === "ground") {
-      card.style.backgroundColor = "#CC9F4F";
-      hp.style.color = "#94743b";
-    } else if (pokemon.types[0].type.name === "normal") {
-      card.style.backgroundColor = "#AAB09F";
-      hp.style.color = "#70746a";
-    } else if (pokemon.types[0].type.name === "psychic") {
-      card.style.backgroundColor = "#E5709B";
-      hp.style.color = "#8e415d";
-    } else if (pokemon.types[0].type.name === "rock") {
-      card.style.backgroundColor = "#B2A061";
-      hp.style.color = "#7a6d3f";
-    } else if (pokemon.types[0].type.name === "steel") {
-      card.style.backgroundColor = "#89A1B0";
-      hp.style.color = "#6c818e";
-    } else if (pokemon.types[0].type.name === "dragon") {
-      card.style.backgroundColor = "#6A7BAF";
-      hp.style.color = "#47598e";
+    for (let i = 0; i < starterPokemon.length; i++) {
+      const ID = starterPokemon[i];
+      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${ID}`);
+      const data = await response.json();
+      pokemonData.push(data);
     }
 
-    container.appendChild(card);
-  });
-}
-
-function upperCase(name) {
-  return name[0].toUpperCase() + name.slice(1).toLowerCase();
-}
-
-window.addEventListener("scroll", function () {
-  var backToTopButton = document.getElementById("back");
-  // Calculate the threshold as 95% of the scroll height
-  var threshold = 0.85 * document.documentElement.scrollHeight;
-  if (window.scrollY + window.innerHeight >= threshold) {
-    backToTopButton.style.display = "block"; // Display the button when scrolling reaches 95% of the scroll height
-  } else {
-    backToTopButton.style.display = "none"; // Hide the button otherwise
+    displayCards(pokemonData);
+  } catch (error) {
+    console.error("Error fetching Pokémon:", error);
   }
-});
+}
 
+/////////////////////////////////////////////////////////////////////////
+
+//Fetch ability description to display in card
 function fetchAbilityDescription(pokemon) {
   return new Promise(async (resolve, reject) => {
     try {
@@ -222,24 +120,187 @@ function fetchAbilityDescription(pokemon) {
   });
 }
 
-window.onload = fetchStarterPokemon();
+/////////////////////////////////////////////////////////////////////////
 
-async function fetchStarterPokemon() {
-  const starterPokemon = [1, 4, 7];
-  try {
-    const pokemonData = [];
+//Display functions (Helpers)
+function createCard() {
+  const card = document.createElement("div");
+  card.className = "card";
+  return card;
+}
 
-    for (let i = 0; i < starterPokemon.length; i++) {
-      const ID = starterPokemon[i];
-      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${ID}`);
-      const data = await response.json();
-      pokemonData.push(data);
-    }
+function createTitle() {
+  const title = document.createElement("div");
+  title.className = "title";
+  return title;
+}
 
-    displayCards(pokemonData);
-  } catch (error) {
-    console.error("Error fetching Pokémon:", error);
+function createPokemonName(pokemon) {
+  const name = document.createElement("div");
+  name.className = "name";
+  name.innerHTML = `<h1>${upperCase(pokemon.name)}</h1>`;
+  return name;
+}
+
+function createPokemonHP(pokemon) {
+  const hp = document.createElement("div");
+  hp.className = "hp";
+  hp.innerHTML = `<h1>${pokemon.stats[0].base_stat} HP</h1>`;
+  return hp;
+}
+
+function createPokemonImage(pokemon) {
+  const img = document.createElement("img");
+  img.src = pokemon.sprites.other.showdown.front_default;
+  img.alt = pokemon.name;
+  return img;
+}
+
+function createAbilitySection() {
+  const abilityInfo = document.createElement("div");
+  abilityInfo.id = "abilityInfo";
+  return abilityInfo;
+}
+
+function createAbilityName(pokemon) {
+  const abilities = document.createElement("h3");
+  abilities.className = "abilities";
+  abilities.innerText = upperCase(pokemon.abilities[0].ability.name + " - ");
+  return abilities;
+}
+
+function createAbilityDescription(pokemon) {
+  const abilityDescription = document.createElement("p");
+  abilityDescription.className = "abilityDescription";
+  fetchAbilityDescription(pokemon)
+    .then((ability) => {
+      abilityDescription.innerText = ability;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  return abilityDescription;
+}
+
+function appendToAbilities(abilityInfo, abilities, abilityDescription) {
+  abilityInfo.appendChild(abilities);
+  abilityInfo.appendChild(abilityDescription);
+}
+
+function appendToTitle(title, name, hp) {
+  title.appendChild(name);
+  title.appendChild(hp);
+}
+
+function appendAllToCard(card, title, img, line, abilityInfo) {
+  card.appendChild(title);
+  card.appendChild(img);
+  card.appendChild(line);
+  card.appendChild(abilityInfo);
+}
+
+//Sets the background color and hp color based on pokemon type
+function setCardColors(pokemon, card, hp) {
+  switch (pokemon.types[0].type.name) {
+    case "water":
+      card.style.backgroundColor = "#539AE2";
+      hp.style.color = "rgb(0, 124, 201)";
+      break;
+    case "fire":
+      card.style.backgroundColor = "#EA7A3C";
+      hp.style.color = "rgb(200, 64, 15)";
+      break;
+    case "grass":
+      card.style.backgroundColor = "#71C558";
+      hp.style.color = "#3e9424";
+      break;
+    case "poison":
+      card.style.backgroundColor = "#B468B7";
+      hp.style.color = "#824a84";
+      break;
+    case "bug":
+      card.style.backgroundColor = "#94BC4A";
+      hp.style.color = "#4f6722";
+      break;
+    case "dark":
+      card.style.backgroundColor = "#736C75";
+      hp.style.color = "#5a565b";
+      break;
+    case "electric":
+      card.style.backgroundColor = "#E5C531";
+      hp.style.color = "#ad9424";
+      break;
+    case "fairy":
+      card.style.backgroundColor = "#E397D1";
+      hp.style.color = "#af5e9c";
+      break;
+    case "fighting":
+      card.style.backgroundColor = "#CB5F48";
+      hp.style.color = "#8e3c2a";
+      break;
+    case "flying":
+      card.style.backgroundColor = "#7DA6DE";
+      hp.style.color = "#607ba0";
+      break;
+    case "ghost":
+      card.style.backgroundColor = "#846AB6";
+      hp.style.color = "#5d4884";
+      break;
+    case "ground":
+      card.style.backgroundColor = "#CC9F4F";
+      hp.style.color = "#987537";
+      break;
+    case "ice":
+      card.style.backgroundColor = "#70CBD4";
+      hp.style.color = "#55a7af";
+      break;
+    case "normal":
+      card.style.backgroundColor = "#AAB09F";
+      hp.style.color = "#70746a";
+      break;
+    case "psychic":
+      card.style.backgroundColor = "#E5709B";
+      hp.style.color = "#8e415d";
+      break;
+    case "rock":
+      card.style.backgroundColor = "#B2A061";
+      hp.style.color = "#7a6d3f";
+      break;
+    case "steel":
+      card.style.backgroundColor = "#89A1B0";
+      hp.style.color = "#6c818e";
+      break;
+    case "dragon":
+      card.style.backgroundColor = "#6A7BAF";
+      hp.style.color = "#47598e";
+      break;
+    default:
+      break;
   }
 }
 
+//Display function
+function displayCards(pokemonData) {
+  const container = document.getElementById("container");
+  container.innerHTML = "";
+  pokemonData.forEach((pokemon) => {
+    const card = createCard();
+    const title = createTitle();
+    const name = createPokemonName(pokemon);
+    const hp = createPokemonHP(pokemon);
+    const img = createPokemonImage(pokemon);
+    const line = document.createElement("hr");
+    const abilityInfo = createAbilitySection();
+    const abilities = createAbilityName(pokemon);
+    const abilityDescription = createAbilityDescription(pokemon);
+
+    appendToTitle(title, name, hp);
+    appendToAbilities(abilityInfo, abilities, abilityDescription);
+    appendAllToCard(card, title, img, line, abilityInfo);
+    setCardColors(pokemon, card, hp);
+    container.appendChild(card);
+  });
+}
+
+window.onload = fetchStarterPokemon();
 fetchPokemonType();

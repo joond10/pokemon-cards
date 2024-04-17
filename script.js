@@ -91,7 +91,7 @@ function displayCards(pokemonData) {
 
     const hp = document.createElement("div");
     hp.className = "hp";
-    hp.innerHTML = `<h1>${pokemon.base_experience} HP</h1>`;
+    hp.innerHTML = `<h1>${pokemon.stats[0].base_stat} HP</h1>`;
     title.appendChild(hp);
 
     card.appendChild(title);
@@ -100,7 +100,20 @@ function displayCards(pokemonData) {
     img.src = pokemon.sprites.other.showdown.front_default;
     img.alt = pokemon.name;
 
+    const horizontalLine = document.createElement("hr");
+
+    const abilities = document.createElement("h3");
+    abilities.className = "abilities";
+    abilities.innerText = upperCase(pokemon.abilities[0].ability.name + " - ");
+
+    const abilityDescription = document.createElement("p");
+    abilityDescription.className = "abilityDescription";
+    abilityDescription.innerText = "Hello this is a description";
+
     card.appendChild(img);
+    card.appendChild(horizontalLine);
+    card.appendChild(abilities);
+    card.appendChild(abilityDescription);
 
     if (pokemon.types[0].type.name === "water") {
       card.style.backgroundColor = "#539AE2";

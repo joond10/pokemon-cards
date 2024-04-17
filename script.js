@@ -48,8 +48,8 @@ async function fetchPokemonByType(selectedType) {
       if (primaryType === selectedType) {
         pokeMatches.push(pokeDetails);
       }
-      displayCards(pokeMatches);
     }
+    displayCards(pokeMatches);
   } catch (error) {
     console.error("Error fetching Pokémon of selected type:", error);
     return [];
@@ -102,18 +102,28 @@ function displayCards(pokemonData) {
 
     const horizontalLine = document.createElement("hr");
 
+    const abilityInfo = document.createElement("div");
+    abilityInfo.id = "abilityInfo";
+
     const abilities = document.createElement("h3");
     abilities.className = "abilities";
     abilities.innerText = upperCase(pokemon.abilities[0].ability.name + " - ");
 
     const abilityDescription = document.createElement("p");
     abilityDescription.className = "abilityDescription";
-    abilityDescription.innerText = "Hello this is a description";
+    fetchAbilityDescription(pokemon)
+      .then((ability) => {
+        abilityDescription.innerText = ability;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
     card.appendChild(img);
     card.appendChild(horizontalLine);
-    card.appendChild(abilities);
-    card.appendChild(abilityDescription);
+    abilityInfo.appendChild(abilities);
+    abilityInfo.appendChild(abilityDescription);
+    card.appendChild(abilityInfo);
 
     if (pokemon.types[0].type.name === "water") {
       card.style.backgroundColor = "#539AE2";
@@ -192,5 +202,44 @@ window.addEventListener("scroll", function () {
     backToTopButton.style.display = "none"; // Hide the button otherwise
   }
 });
+
+function fetchAbilityDescription(pokemon) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await fetch(pokemon.abilities[0].ability.url);
+      const data = await response.json();
+      const englishEntry = data.effect_entries.find(
+        (entry) => entry.language.name === "en"
+      );
+      // If English entry is found, return its effect, otherwise return an empty string
+      const effect = englishEntry
+        ? englishEntry.short_effect
+        : data.effect_entries[0].short_effect;
+      resolve(effect);
+    } catch (error) {
+      reject("Unable to fetch ability: " + error);
+    }
+  });
+}
+
+window.onload = fetchStarterPokemon();
+
+async function fetchStarterPokemon() {
+  const starterPokemon = [1, 4, 7];
+  try {
+    const pokemonData = [];
+
+    for (let i = 0; i < starterPokemon.length; i++) {
+      const ID = starterPokemon[i];
+      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${ID}`);
+      const data = await response.json();
+      pokemonData.push(data);
+    }
+
+    displayCards(pokemonData);
+  } catch (error) {
+    console.error("Error fetching Pokémon:", error);
+  }
+}
 
 fetchPokemonType();

@@ -56,21 +56,23 @@ async function fetchPokemonByType(selectedType) {
   }
 }
 
-// function generateRandomPokemonIds(count) {
-//   //Initialize an array of pokemon IDs
-//   const pokemonIds = [];
-//   //While we haven't reached the amount desired
-//   while (pokemonIds.length < count) {
-//     //Generate a random number
-//     const randomId = Math.floor(Math.random() * 151) + 1;
-//     //If the array doesn't include the random number
-//     if (!pokemonIds.includes(randomId)) {
-//       //Push into array
-//       pokemonIds.push(randomId);
-//     }
-//   }
-//   return pokemonIds;
-// }
+async function fetchAllPokemon() {
+  const noOfPokemon = 151;
+  let ID = 1;
+  let pokemonData = [];
+
+  try {
+    for (let ID = 1; ID <= noOfPokemon; ID++) {
+      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${ID}`);
+      const data = await response.json();
+      pokemonData.push(data);
+    }
+    displayCards(pokemonData);
+  } catch (error) {
+    console.log("Error fetching Pokémon", error);
+  }
+}
+
 function displayCards(pokemonData) {
   const container = document.getElementById("container");
   container.innerHTML = "";
@@ -167,8 +169,6 @@ function upperCase(name) {
   return name[0].toUpperCase() + name.slice(1).toLowerCase();
 }
 
-fetchPokemonType();
-
 window.addEventListener("scroll", function () {
   var backToTopButton = document.getElementById("back");
   // Calculate the threshold as 95% of the scroll height
@@ -179,3 +179,5 @@ window.addEventListener("scroll", function () {
     backToTopButton.style.display = "none"; // Hide the button otherwise
   }
 });
+
+fetchPokemonType();

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Choose your pokémon!</title>
+    <title>Pokémon cards!</title>
     <link rel="stylesheet" href="./style.css" />
     <link
       href="https://fonts.cdnfonts.com/css/pokemon-solid"
@@ -12,13 +12,17 @@
   </head>
   <body>
     <header id="#top">
-      <h1 class="announcer top">Choose your pokémon!</h1>
+      <h1 class="announcer top">Pokémon cards!</h1>
       <label class="announcer" for="types">Choose a Pokémon type:</label>
       <select id="types" name="types">
         <!-- Dynamically insert pokemon types -->
       </select>
+      <button class="btn announcer" onclick="fetchAllPokemon()">
+        View all
+      </button>
     </header>
 
+    <!-- Static data for on load but will dynamically update with pokemon API -->
     <div id="container">
       <div id="pokemon1">
         <div class="card">

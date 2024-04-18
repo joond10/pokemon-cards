@@ -7,12 +7,7 @@
 }
 
 body {
-  background: linear-gradient(
-    to right,
-    lightblue,
-    rgb(255, 126, 79),
-    lightgreen
-  );
+  background: linear-gradient(to right, #71c558, #ea7a3c, #539ae2);
 }
 
 .announcer {
